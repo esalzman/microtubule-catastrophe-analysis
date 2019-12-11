@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.optimize
 import scipy.stats as st
+import bebi103
 
 import warnings
 
@@ -38,4 +39,26 @@ def gamma_mle(t):
         return res.x
     else:
         raise RuntimeError('Convergence failed with message', res.message)
+        
+        
+def gen_gamma(params, size, rg):
+    '''
+    Generates bootstrap sample from generative model.
+    '''
+    alpha, beta = params
+    return rg.gamma(alpha, 1 / beta, size=size)
+
+def bootstrap_CI(t, size=1000):
+    bs_reps = bebi103.draw_bs_reps_mle(
+        mle_fun=gamma_mle, 
+        gen_fun=gen_gamma, 
+        data=t, 
+        size=size, 
+        progress_bar=True,
+    )
+    
+    ci = np.percentile(bs_reps, [2.5, 97.5], axis=0)
+    
+    print(f'α 95% confidence interval: [{ci[0][0]:.3f}, {ci[1][0]:.3f}]')
+    print(f'β 95% confidence interval: [{ci[0][1]:.3f}, {ci[1][1]:.3f}]')
         
