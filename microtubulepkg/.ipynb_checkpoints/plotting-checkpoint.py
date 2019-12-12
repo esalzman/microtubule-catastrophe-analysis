@@ -6,6 +6,7 @@ import bokeh_catplot
 from bokeh.models.annotations import Title
 
 import holoviews as hv
+hv.extension('bokeh')
 
 import bokeh.io
 bokeh.io.output_notebook()
@@ -143,3 +144,22 @@ def plot_all_concentrations(tub_df, mle_data):
     l = bokeh.layouts.layout([[p7,p9],[p10,p12],[p14]])
 
     bokeh.io.show(l)
+    
+def plot_alpha_beta(mle_data):
+    alpha_p = hv.Scatter(
+        data=mle_data,
+        kdims=['molarity (uM)', 'alpha MLE'],
+        vdims=['alpha MLE', *mle_data.columns]
+    ).opts(
+        title='Parameter values vs. tubulin concentration'
+    )
+    
+    beta_p = hv.Points(
+        data=mle_data,
+        kdims=['molarity (uM)', 'beta MLE'],
+        vdims=['beta MLE', *mle_data.columns]
+    ).opts(
+        title='Parameter values vs. tubulin concentration'
+    )
+    
+    bokeh.io.show(alpha_p + beta_p)
